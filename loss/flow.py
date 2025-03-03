@@ -36,9 +36,9 @@ class EventWarping(torch.nn.Module):
     def __init__(self, config, device, flow_scaling=None, loss_scaling=True):
         super(EventWarping, self).__init__()
         self.loss_scaling = loss_scaling
-        self.res = config["loader"]["resolution"]
-        self.flow_scaling = flow_scaling if flow_scaling is not None else max(config["loader"]["resolution"])
-        self.weight = config["loss"]["flow_regul_weight"]
+        self.res = config["loader"]["resolution"]#分辨率
+        self.flow_scaling = flow_scaling if flow_scaling is not None else max(config["loader"]["resolution"])#分辨率
+        self.weight = config["loss"]["flow_regul_weight"]#权重，设置为0.001
         self.smoothing_mask = False if "mask_output" not in config["model"].keys() else config["model"]["mask_output"]
         self.overwrite_intermediate = (
             False if "overwrite_intermediate" not in config["loss"].keys() else config["loss"]["overwrite_intermediate"]

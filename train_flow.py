@@ -75,7 +75,7 @@ def train(args, config_parser):
     )
 
     # loss function
-    loss_function = EventWarping(config, device)
+    loss_function = EventWarping(config, device)#定义loss function 类
 
     # model initialization and settings
     model = eval(config["model"]["name"])(config["model"].copy()).to(device)
@@ -130,7 +130,7 @@ def train(args, config_parser):
             x = model(inputs["event_voxel"].to(device), inputs["event_cnt"].to(device))
 
             # event flow association
-            loss_function.event_flow_association(
+            loss_function.event_flow_association(#将event和flow进行关联
                 x["flow"],
                 inputs["event_list"].to(device),
                 inputs["event_list_pol_mask"].to(device),
@@ -138,14 +138,14 @@ def train(args, config_parser):
             )
 
             # backward pass
-            if loss_function.num_events >= config["data"]["window_loss"]:
+            if loss_function.num_events >= config["data"]["window_loss"]:#如果event数量大于window_loss
 
-                # overwrite intermediate flow estimates with the final ones
+                # overwrite intermediate flow estimates with the final ones（用最终流量估算覆盖中间流量估算）
                 if config["loss"]["overwrite_intermediate"]:
                     loss_function.overwrite_intermediate_flow(x["flow"])
 
                 # loss
-                loss = loss_function()
+                loss = loss_function()#计算loss应该是调用forward函数
                 train_loss += loss.item()
 
                 # update number of loss samples seen by the network

@@ -20,7 +20,7 @@ model:
 spiking_neuron: Null
     
 loss:
-    flow_regul_weight: 0.001
+    flow_regul_weight: 0.001 #正则化的权重
     clip_grad: 100.0 # set to Null to disable
     overwrite_intermediate: False
 
