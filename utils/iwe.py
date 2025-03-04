@@ -25,7 +25,7 @@ def get_interpolation(events, flow, tref, res, flow_scaling, round_idx=False):
     :param flow: [batch_size x N x 2] optical flows (y, x)
     :param tref: reference time toward which events are warped
     :param res: resolution of the image space
-    :param flow_scaling: scalar that multiplies the optical flow map
+    :param flow_scaling: scalar that multiplies the optical flow map（乘在光流图上~）
     :param round_idx: whether or not to round the event locations instead of doing bilinear interp. (default = False)
     :return interpolated event indices
     :return interpolation weights
