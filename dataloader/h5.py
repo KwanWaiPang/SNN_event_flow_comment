@@ -282,8 +282,8 @@ class H5Loader(BaseDataLoader):
             event_cnt = self.create_cnt_encoding(xs, ys, ps)
             event_mask = self.create_mask_encoding(xs, ys, ps)
             event_voxel = self.create_voxel_encoding(xs, ys, ts, ps)
-            event_list = self.create_list_encoding(xs, ys, ts, ps)
-            event_list_pol_mask = self.create_polarity_mask(ps)
+            event_list = self.create_list_encoding(xs, ys, ts, ps)#事件list
+            event_list_pol_mask = self.create_polarity_mask(ps)#极性掩码
 
             # hot pixel removal
             if self.config["hot_filter"]["enabled"]:

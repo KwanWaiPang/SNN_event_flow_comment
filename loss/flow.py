@@ -180,7 +180,7 @@ class EventWarping(torch.nn.Module):
         pol_mask = torch.cat([self._pol_mask_list for i in range(4)], dim=1)
         ts_list = torch.cat([self._event_list[:, :, 0:1] for i in range(4)], dim=1)
 
-        # smoothing mask
+        # smoothing mask（平滑mask）
         if self.smoothing_mask:
             event_mask_dx = self._event_mask[:, :, :, :-1] * self._event_mask[:, :, :, 1:]
             event_mask_dy = self._event_mask[:, :, :-1, :] * self._event_mask[:, :, 1:, :]
@@ -190,10 +190,10 @@ class EventWarping(torch.nn.Module):
                 event_mask_dt = self._event_mask[:, :-1, :, :] * self._event_mask[:, 1:, :, :]
 
         loss = 0
-        for i in range(len(self._flow_list)):
+        for i in range(len(self._flow_list)):#遍历所有的flow
 
             # interpolate forward
-            tref = max_ts
+            tref = max_ts#最大时间戳，原本设置是1的，但此处一直更新迭代
             fw_idx, fw_weights = get_interpolation(
                 self._event_list, self._flow_list[i], tref, self.res, self.flow_scaling
             )
@@ -214,7 +214,7 @@ class EventWarping(torch.nn.Module):
             fw_iwe_pos_ts = fw_iwe_pos_ts / max_ts
             fw_iwe_neg_ts = fw_iwe_neg_ts / max_ts
 
-            # scale loss with number of pixels with at least one event in the image of warped events
+            # scale loss with number of pixels with at least one event in the image of warped events（额外增加的）
             fw_iwe_pos_ts = fw_iwe_pos_ts.view(fw_iwe_pos_ts.shape[0], -1)
             fw_iwe_neg_ts = fw_iwe_neg_ts.view(fw_iwe_neg_ts.shape[0], -1)
             fw_loss = torch.sum(fw_iwe_pos_ts ** 2, dim=1) + torch.sum(fw_iwe_neg_ts ** 2, dim=1)
@@ -222,7 +222,7 @@ class EventWarping(torch.nn.Module):
                 fw_nonzero_px = fw_iwe_pos + fw_iwe_neg
                 fw_nonzero_px[fw_nonzero_px > 0] = 1
                 fw_nonzero_px = fw_nonzero_px.view(fw_nonzero_px.shape[0], -1)
-                fw_loss /= torch.sum(fw_nonzero_px, dim=1)
+                fw_loss /= torch.sum(fw_nonzero_px, dim=1)#除以非零像素的数量，对loss进行缩放有利于训练以及收敛
             fw_loss = torch.sum(fw_loss)
 
             # interpolate backward
@@ -255,7 +255,7 @@ class EventWarping(torch.nn.Module):
                 bw_nonzero_px = bw_iwe_pos + bw_iwe_neg
                 bw_nonzero_px[bw_nonzero_px > 0] = 1
                 bw_nonzero_px = bw_nonzero_px.view(bw_nonzero_px.shape[0], -1)
-                bw_loss /= torch.sum(bw_nonzero_px, dim=1)
+                bw_loss /= torch.sum(bw_nonzero_px, dim=1)#除以非零像素的数量，对loss进行缩放有利于训练以及收敛
             bw_loss = torch.sum(bw_loss)
 
             # flow smoothing
@@ -276,7 +276,7 @@ class EventWarping(torch.nn.Module):
             flow_dxdy_ur = torch.sqrt((flow_x_dxdy_ur + flow_y_dxdy_ur) ** 2 + 1e-6)  # charbonnier
             flow_dt = torch.sqrt((flow_x_dt + flow_y_dt) ** 2 + 1e-6)  # charbonnier
 
-            # smoothing mask
+            # smoothing mask（用smooth mask进行平滑处理，应该是只有有event的区域才会被回传梯度）
             if self.smoothing_mask:
                 flow_dx = event_mask_dx * flow_dx
                 flow_dy = event_mask_dy * flow_dy
@@ -365,7 +365,7 @@ class BaseValidationLoss(torch.nn.Module):
             self._event_list = event_list
         else:
             event_list = event_list.clone()  # to prevent issues with other metrics
-            event_list[:, :, 0:1] += self._passes  # only nonzero second time
+            event_list[:, :, 0:1] += self._passes  # only nonzero second time，时间会累加
             self._event_list = torch.cat([self._event_list, event_list], dim=1)
 
         # update internal polarity mask list
@@ -393,7 +393,7 @@ class BaseValidationLoss(torch.nn.Module):
         self._dt_gt = inputs["dt_gt"]
 
         # update timestamp index
-        self._passes += 1
+        self._passes += 1 #每次都会更新
 
     def overwrite_intermediate_flow(self, flow_list):
         """

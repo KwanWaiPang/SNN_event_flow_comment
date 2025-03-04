@@ -131,17 +131,17 @@ def train(args, config_parser):
 
             # event flow association
             loss_function.event_flow_association(#将event和flow进行关联
-                x["flow"],
-                inputs["event_list"].to(device),
-                inputs["event_list_pol_mask"].to(device),
-                inputs["event_mask"].to(device),
+                x["flow"],#光流
+                inputs["event_list"].to(device),#输入的事件列表
+                inputs["event_list_pol_mask"].to(device),#输入的事件列表的极性掩码
+                inputs["event_mask"].to(device),#输入的事件掩码（相当于累积event的xy）
             )
 
             # backward pass
-            if loss_function.num_events >= config["data"]["window_loss"]:#如果event数量大于window_loss
+            if loss_function.num_events >= config["data"]["window_loss"]:#如果event数量大于window_loss，参数设置为10000
 
                 # overwrite intermediate flow estimates with the final ones（用最终流量估算覆盖中间流量估算）
-                if config["loss"]["overwrite_intermediate"]:
+                if config["loss"]["overwrite_intermediate"]:#ANN的时候为False
                     loss_function.overwrite_intermediate_flow(x["flow"])
 
                 # loss

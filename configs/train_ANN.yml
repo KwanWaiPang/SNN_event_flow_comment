@@ -15,7 +15,7 @@ model:
     base_num_channels: 32
     kernel_size: 3
     activations: [relu, Null] # activations for ff and rec neurons
-    mask_output: True
+    mask_output: True #采用smooth mask
 
 spiking_neuron: Null
     
